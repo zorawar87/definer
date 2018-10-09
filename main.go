@@ -17,7 +17,10 @@ const (
 func main() {
 	wordToDefine := extractWordFromInput()
 	dfn := queryDefintion(wordToDefine)
+
 	fmt.Println(dfn.Results[0].LexicalEntries[0].Entries[0].Senses[0].Definitions[0])
+	feedback(dfn)
+	// temporary feedback mechanism
 }
 
 func extractWordFromInput() (wordToDefine string) {
@@ -37,8 +40,8 @@ func queryDefintion(wordToDefine string) definition {
 	req, err := http.NewRequest(http.MethodGet, query, nil)
 	handleErr(err)
 
-	// APP_ID and APP_KEY
-	// are initialised in local (non-VCS) file
+	// appID and appKey
+	// is initialised in local (non-VCS) file
 	req.Header.Set("app_id", appID)
 	req.Header.Set("app_key", appKey)
 
@@ -52,6 +55,18 @@ func queryDefintion(wordToDefine string) definition {
 	dfn := definition{}
 	handleErr(json.Unmarshal(body, &dfn))
 	return dfn
+}
+
+func feedback(dfn definition) {
+	// logPath
+	// is initialised in local (non-VCS) file
+	f, err := os.OpenFile(logPath, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0640)
+	handleErr(err)
+	defer f.Close()
+
+	log.SetOutput(f)
+	log.Printf("%-20s: %s", dfn.Results[0].Word,
+		dfn.Results[0].LexicalEntries[0].Entries[0].Senses[0].Definitions[0])
 }
 
 func handleErr(e error) {

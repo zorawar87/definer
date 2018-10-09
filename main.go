@@ -11,9 +11,7 @@ import (
 )
 
 const (
-	// APP_ID and APP_KEY
-	// are initialised in local (non-VCS) file
-	URL = "https://od-api.oxforddictionaries.com/api/v1/entries/en/"
+	url = "https://od-api.oxforddictionaries.com/api/v1/entries/en/"
 )
 
 func main() {
@@ -32,15 +30,17 @@ func extractWordFromInput() (wordToDefine string) {
 }
 
 func queryDefintion(wordToDefine string) definition {
-	query := URL + strings.ToLower(wordToDefine)
+	query := url + strings.ToLower(wordToDefine)
 
 	definerClient := http.Client{}
 
 	req, err := http.NewRequest(http.MethodGet, query, nil)
 	handleErr(err)
 
-	req.Header.Set("app_id", APP_ID)
-	req.Header.Set("app_key", APP_KEY)
+	// APP_ID and APP_KEY
+	// are initialised in local (non-VCS) file
+	req.Header.Set("app_id", appID)
+	req.Header.Set("app_key", appKey)
 
 	res, err := definerClient.Do(req)
 	handleErr(err)
